@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  db:
+    container_name: postgres_db
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: root
+      # PostgreSQLサーバーが起動時に作成する新しいユーザーの名前を指定
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dev
+      # PostgreSQLサーバーが起動時に作成するデータベースの名前を設定
+    volumes:
+      - postgre_sql-volume:/var/lib/postgresql
+
+  app:
+    build: .
+    container_name: app_python
+    ports:
+      - 8080:8080
+    volumes:
+      - ./app:/app
+    tty: true
+    depends_on:
+      - db
+        # 一つのサービス（この場合は app）が他のサービス（この場合は db）に依存していることを示す
+
+volumes:
+  postgre_sql-volume:
+    # ondition オプションは、Docker Composeのバージョン3以降では非推奨となっています。
+    # 代わりに、アプリケーション自体が依存サービスの準備ができるまで待つように設計することが推奨されています
